@@ -1,90 +1,63 @@
-# Repair verification 3 — PASS
+# Verification 3 — PASS
 
 Date: 6 September 2026
-Work order: `hand-of-two-repair-3`
+Work order: `hand-of-two-verify-3`
 Live URL: <https://hand-of-two.sociobot.in>
-Static implementation: `56f111fc186ec8ee79d667dbdaa591f85660b238`
-Realtime implementation: `7158d8607ef02094bc105fb16f7fc1cb44fedab7` (unchanged)
-Documentation candidate: `90f13495fe8e37700fb2d4e3ca05a6e7f8277e32`
+Implementation candidate reviewed: `56f111fc186ec8ee79d667dbdaa591f85660b238`
+Documentation candidate reviewed: `a3ace4a4f25ea06bd222262dc6c7b9c1d967b98f`
 
 ## Verdict
 
-**PASS — the four minor findings from Verification 2 are fixed. All declared
-claims passed, and no current product defect remains open.**
+**PASS — 0 findings; 0 untested declared claims.**
 
-## Finding disposition
+Hand of Two is a room-code, two-browser, six-turn card duel for couples and
+friends. On the first screen, the job is **Draft cards and predict the other
+player’s moves**. It identifies the audience and presents **Try it with sample
+data** as the first action, with an active game preview already on screen.
 
-### Verification 2 minor 1 — fixed
+## Prior finding disposition
 
-The small-screen score grid no longer uses two inflexible 4 rem columns. Its
-two numeric columns are bounded inside the available width. In a fresh 390 px
-phone browser with the root text size increased from 16 px to 32 px, every
-rendered score cell had a visible rectangle between x=0 and x=390. The `Other`
-column was no longer clipped.
+All earlier findings are closed.
 
-Evidence: `/work/.evidence/repair-3-live-phone-200-percent.png`.
-
-### Verification 2 minor 2 — fixed
-
-Navigation, demo-banner, and footer links now render at least 44×44 CSS pixels.
-The regression check measures every affected element in fresh 390 px and 1280
-px contexts. The live check repeated the measurement.
-
-### Verification 2 minor 3 — fixed
-
-Both social-card tags now resolve to the same original 1200×630 PNG. A browser
-request received HTTP 200 and `image/png`; the PNG header reported dimensions
-of 1200×630. The 85 KB image is a raster export of the hand-authored SVG and
-introduces no third-party asset.
-
-### Verification 2 minor 4 — fixed
-
-An unknown URL still returns the deliberate HTTP 404. The rendered response now
-has the standard skip link, wordmark header, main navigation, one main landmark,
-one h1, footer navigation, version line, and home recovery action. Axe reports
-no serious or critical issue on that page.
-
-Evidence: `/work/.evidence/repair-3-live-404.png`.
-
-### Earlier Verification 1 critical finding — remains fixed
-
-The live static bundle still calls the product-owned realtime origin. The final
-candidate completed an independent two-client match, and live HTML, JavaScript,
-and CSS matched the local production build byte for byte.
+- Verification 1 critical: fixed. The deployed static build calls the
+  product-owned realtime origin. A fresh live two-client match created, joined,
+  hid the first move, reconnected after a locked move, reached both end screens,
+  and started a rematch.
+- Verification 2 minor 1: fixed. In a fresh 390 by 844 phone browser with root
+  text set to 32 px, scroll width stayed 390 px and every preview score cell
+  remained visible within the viewport.
+- Verification 2 minor 2: fixed. The checked header, demo-banner, and footer
+  controls met 44 by 44 CSS px on phone and desktop in the regression suite.
+- Verification 2 minor 3: fixed. `og:image` and `twitter:image` resolve to the
+  same HTTP 200 `image/png`; its PNG header is 1200 by 630.
+- Verification 2 minor 4: fixed. The deliberate HTTP 404 now has the standard
+  banner, main navigation, skip link, main landmark, footer, one h1, and a home
+  recovery action. The 404 status itself is expected.
 
 ## Clean setup and quality gates
 
-Setup used Node `v22.23.2`, npm `10.9.8`, and `npm ci`. npm reported zero
+Clean setup used Node `v22.23.2`, npm `10.9.8`, and `npm ci`; npm reported zero
 vulnerabilities.
 
 | Gate | Result |
 | --- | --- |
-| `npm test` | Pass: 6 unit/SQLite and 15 Chromium tests |
-| `npm run build` | Pass: `dist/` produced |
-| `npm run test:a11y` | Pass: six routes, no serious/critical Axe issue |
-| Factory `verify-url.sh` | Pass: HTTPS 200, required structure, zero console errors |
-| Standalone Axe CLI 4.13.0 | Pass: 0 violations |
-| Lighthouse mobile | 100 Performance, 100 Accessibility, 100 Best Practices, 100 SEO |
+| `npm test` | Pass: 6 unit/SQLite tests and 15 Chromium browser tests |
+| `npm run build` | Pass; `dist/` produced |
+| `npm run test:a11y` | Pass; all six application routes had no serious or critical Axe issue |
+| Live Axe scan | Pass; six application routes and the 404 had no serious or critical issue |
+| Live Lighthouse mobile | 100 Performance, 100 Accessibility, 100 Best Practices, 100 SEO |
 
-The standalone Axe command first required the tool's documented matching
-Chrome/ChromeDriver prerequisite. After installing that prerequisite, the live
-scan completed successfully. No declared product command required an
-undocumented dependency.
+The independent Lighthouse run measured LCP 1.0 s, CLS 0, and total blocking
+time 30 ms. The current production build is 32.52 KB JavaScript raw / 10.65 KB
+gzip and 12.76 KB CSS raw / 3.70 KB gzip.
 
-Production bundle measurements:
-
-| Asset | Raw | Gzip |
-| --- | ---: | ---: |
-| JavaScript | 32.52 KB | 10.62 KB |
-| CSS | 12.76 KB | 3.70 KB |
-
-Lighthouse reported LCP 946 ms, CLS 0, and total blocking time 25 ms. A
-two-second requestAnimationFrame sample in a fresh phone context measured 60.6
-frames per second. The public product makes no frame-rate claim.
+The live `index.html`, JavaScript, and CSS SHA-256 values exactly match a fresh
+production build from `56f111f`. No later documentation-only commit was treated
+as a new product image.
 
 ## Declared claims
 
-Every exact command in `.factory/claims.json` ran against the final candidate:
+Every exact command in `.factory/claims.json` ran independently and passed.
 
 | Claim | Command | Result |
 | --- | --- | --- |
@@ -99,67 +72,61 @@ Every exact command in `.factory/claims.json` ran against the final candidate:
 | room-retention | `npm run test:unit -- --testNamePattern @claim:room-retention` | Pass |
 | fixed-deck | `npm run test:unit -- --testNamePattern @claim:fixed-deck` | Pass |
 
-The live copy and README were cross-checked with the inventory. Checkout and
-activation remain explicitly inactive, so neither is claimed as working.
+The live landing copy, legal pages, and README were compared with the claim
+inventory. No false, missing, incomplete, or untested public claim was found.
+Checkout and activation remain explicitly inactive and are not claimed to work.
 
-## Live browser-game run
+## Live browser checks
 
-Fresh desktop and 390×844 phone contexts showed the actual game before
-scrolling. The first screen names the job, identifies couples and friends, and
-offers the one-click sample next to its outcome.
+Fresh desktop and 390 by 844 phone contexts loaded without console errors. Both
+showed the job, audience, sample action, and game preview before scrolling. The
+phone page had no horizontal overflow at normal or 200% text size.
 
-The sample began with six real cards and the Crosswind pass. The persistent
-banner remained through all six turns. The run reached `You win the expedition`
-with six history rows. Restart and Reset demo restored the untouched draft.
-A pre-existing real settings value did not change.
+The one-click sample opened a populated six-card Crosswind match. Its persistent
+**Demo — sample data, nothing is saved** label remained through a six-turn
+`You win the expedition` end screen with six history rows. Restart and Reset
+demo returned to a fresh draft. A pre-existing real settings value remained
+unchanged, and no demo storage key was created. Sample requests stayed on the
+static product origin.
 
-Two independent fresh contexts then created and joined a live room. The first
-host move stayed hidden from the guest. Reload restored that locked move. Both
-clients completed six turns, reached their own matching end states, and started
-a rematch. A third seat was rejected.
+Two fresh, independent browser contexts then used a real room. The host's first
+locked choice did not change the guest view. Reloading the host preserved that
+locked choice; the guest resolved the turn. Both clients completed six turns,
+showed complementary win/loss end screens with six history rows, and mutually
+started a fresh rematch draft. A third independent client was rejected.
 
-Evidence:
+The tested routes `/`, `/demo`, `/play`, `/settings`, `/privacy`, and
+`/terms` all returned 200, with their own titles, exactly one h1, and exactly
+one main landmark. The link crawl found no broken same-origin links. Keyboard
+selection, visible focus, reduced-motion persistence, invalid room input, and
+offline request recovery passed in the candidate suite.
 
-- `/work/.evidence/repair-3-live-demo-end.png`
-- `/work/.evidence/repair-3-live-two-client-host-run.webm`
-- `/work/.evidence/repair-3-live-two-client-guest-run.webm`
-- `/work/.evidence/repair-3-live-two-client-host-end.png`
-- `/work/.evidence/repair-3-live-two-client-guest-end.png`
+## Backend, privacy, and offer
 
-## Backend and isolation
+- Realtime health returned HTTP 200 with the status-only healthy response.
+- A player credential from one room was rejected for another room. No value was
+  retained or written to evidence.
+- A fresh live allowance bucket produced 12 HTTP 201 room creations, followed
+  by HTTP 429 with `Retry-After: 60`.
+- Browser traffic observed during the sample and game flows used only the static
+  product and its product-owned realtime origin. No third-party scripts, fonts,
+  analytics, accounts, or checkout traffic appeared.
+- The complete edition consistently says `$8 USD` once, not a subscription. The
+  purchase control is disabled and no checkout request occurs.
 
-- `GET /api/health` returned 200 with the expected status-only response.
-- A player identifier from one room was rejected when sent for another room.
-- Restarting only `sf-hand-of-two-realtime` while one move was locked preserved
-  the move; both clients reconnected and resolved turn 1.
-- The exact product resource remains at one minimum/maximum replica with `/data`
-  mounted.
-- A new allowance bucket produced twelve 201 responses, then 429 with
-  `Retry-After: 60`.
+Billing registration and license activation remain the only external gap. This
+is honestly disclosed; it is not an untested checkout claim. The researched
+10–15 minute match duration and 30% rematch target are not presented as measured
+production results.
 
-No identifier, access token, cookie, secret, or credential was logged or added
-to evidence.
+## Evidence
 
-## Routes, privacy, recovery, and links
+- Desktop first screen: `/work/.evidence/verification-3-desktop-first-screen.png`
+- Phone first screen and 200% text: `/work/.evidence/verification-3-phone-first-screen.png` and `/work/.evidence/verification-3-phone-200-percent.png`
+- Demo end screen: `/work/.evidence/verification-3-live-demo-end.png`
+- Real two-client end screens: `/work/.evidence/verification-3-live-two-client-host-end.png` and `/work/.evidence/verification-3-live-two-client-guest-end.png`
+- Designed 404: `/work/.evidence/verification-3-live-404.png`
+- Mobile Lighthouse JSON: `/work/.evidence/verification-3-lighthouse.json`
 
-`/`, `/demo`, `/play`, `/settings`, `/privacy`, and `/terms` returned 200 with
-their route-specific titles, one h1, and one main landmark. Same-origin links
-resolved. Keyboard selection, visible focus, reduced motion, saved settings,
-invalid room input, offline room-creation recovery, and deliberate 404 behavior
-passed in the candidate suite. Browser traffic during claim tests stayed on the
-static product and its product-owned realtime origin.
-
-## Offer and open external work
-
-The complete edition remains `$8 USD` as a one-time price for the fixed
-18-card nine-card-type tactical set, six map modifiers, and future scenario
-packs for this edition. It is not a subscription. Public metadata with only the
-required offer fields is at `/work/.evidence/billing-offer.json`.
-
-Billing registration and license activation remain an external dependency.
-The purchase control is disabled, and neither checkout nor entitlement is
-claimed as verified. The free sample and two-player core remain available.
-
-The 10–15 minute match duration and 30% immediate-rematch figures are research
-targets without production cohort data. They are not presented as measured
-public claims.
+No credential, access token, cookie value, player identifier, or room code is
+included in this report or named evidence.
