@@ -1,52 +1,43 @@
 # Hand of Two handoff
 
 Date: 6 September 2026
-Work order: `hand-of-two-verify-3`
+Work order: `hand-of-two-review-1`
 Artifact class: `browser-game`
 Live product: <https://hand-of-two.sociobot.in>
-Static implementation reviewed: `56f111fc186ec8ee79d667dbdaa591f85660b238`
-Documentation commit: `a3ace4a4f25ea06bd222262dc6c7b9c1d967b98f`
+Implementation reviewed: `56f111fc186ec8ee79d667dbdaa591f85660b238`
+Documentation baseline: `f41f62b9b4a7149f657e917b0bf11cc62152c054`
 
 ## Outcome
 
-**PASS — 0 findings and 0 untested declared claims.**
+**PASS — 0 findings; 0 untested declared claims.**
 
-Independent QA confirmed the deployed artifact matches the reviewed
-implementation. The game works as a real two-client, authoritative six-turn
-room game, not merely as a bot demo.
+The live static artifact exactly matches a fresh production build of `56f111f`.
+The game is a real authoritative two-browser, six-turn duel; the demo bot is
+only the labelled sample.
 
 ## Verified
 
 - Clean `npm ci`, `npm test`, `npm run build`, and `npm run test:a11y` passed.
-- All ten exact commands declared in `.factory/claims.json` passed.
-- Fresh desktop and phone sessions showed the job, audience, first sample
-  action, and active game preview without scrolling. At 200% text, the phone
-  score preview remained fully visible.
-- The sample is populated in one click, persistently labelled as a demo, reaches
-  a six-turn result, resets cleanly, and leaves real settings unchanged.
-- Two independent live browser clients created and joined a room; hidden moves,
-  reconnect after a locked move, six-turn completion, end screens, rematch, and
-  third-seat rejection passed.
-- The live realtime service passed health, cross-room credential isolation, and
-  allowance checks: 12 creates then 429 with `Retry-After: 60`.
-- The shared 404 design, route titles, keyboard/accessibility structure, legal
-  pages, link crawl, PNG social card, private request paths, and reduced-motion
-  setting passed.
-- Live mobile Lighthouse: Performance 100, Accessibility 100, Best Practices
-  100, SEO 100 (LCP 1.0 s, CLS 0, total blocking time 30 ms).
-
-## Earlier findings
-
-The Verification 1 realtime-origin defect and all four Verification 2 minor
-findings are closed. The live static HTML, JavaScript, and CSS hash-match a
-fresh production build of `56f111f`.
+- All ten exact `.factory/claims.json` commands passed independently.
+- Fresh desktop and phone browsers showed the job, audience, sample action, and
+  active-game preview before scrolling. Phone 200% text did not overflow.
+- The sample starts populated, keeps its demo label, completes to a six-turn end
+  screen, resets, and leaves real browser settings untouched.
+- Fresh independent live clients created and joined a room, kept the first move
+  hidden, reconnected after a locked move, completed, reached complementary end
+  screens, and rematched.
+- Live health returned 200; room creation rate limiting returned 429 with
+  `Retry-After: 60`. Local SQLite tests cover persistence, expiry and isolation;
+  the unchanged service's direct restart evidence remains in Verification 3.
+- Live routes, expected styled 404, links, metadata, privacy request paths,
+  keyboard structure, reduced motion, `verify-url.sh`, and live Axe scans all
+  passed. No console errors were observed.
 
 ## Remaining external work
 
-Billing registration is still pending. The public offer remains `$8 USD` once,
-not a subscription; checkout and license activation are visibly disabled and
-are not claimed to be active. This does not limit the free sample or the real
-two-player game.
+Billing registration is pending. The public complete-edition offer is `$8 USD`
+once, not a subscription. Checkout and activation are disabled and are not
+claimed to work.
 
 ## Run locally
 
@@ -57,7 +48,6 @@ npm run build
 npm run test:a11y
 ```
 
-The factory deploys `dist/` as `sf-hand-of-two`. The product-owned realtime
-service requires its existing `/data` SQLite mount and one-replica deployment.
-
-Detailed evidence is in `.factory/verification-3.md`.
+The factory deploys `dist/` as `sf-hand-of-two`. Its product-owned realtime
+service uses its fleet-created `/data` SQLite mount. See `.factory/review-1.md`
+for the complete review evidence.
