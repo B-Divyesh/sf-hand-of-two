@@ -58,6 +58,7 @@ All shipped art is original, code-made work created for this repository on 6 Sep
 - `public/contours.svg`: hand-authored topographic line field.
 - `public/favicon.svg` and `public/apple-touch-icon.svg`: hand-authored twin-peak mark.
 - `public/og-image.svg`: hand-authored social composition derived from the same lines, mark, palette, and typography.
+- `public/og-image.png`: browser-rasterized 1200×630 export of `public/og-image.svg` for Open Graph and Twitter card support.
 - Card symbols and location marks are Unicode geometry arranged by original CSS, not copied game icons.
 
 The image-generation skill was considered. Raster generation was not used because deterministic SVG and CSS better fit the small asset budget, sharp game symbols, and established code-native visual system. No third-party or generated artwork ships.

@@ -273,12 +273,55 @@ test('phone layout shows the job, first action, and active game preview before s
   await testInfo.attach('phone-first-screen', { body: await page.screenshot(), contentType: 'image/png' });
   await page.evaluate(() => { document.documentElement.style.fontSize = '32px'; });
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  const scoreCells = await page.locator('.table-preview .score-row > *').evaluateAll((elements) => elements.map((element) => {
+    const bounds = element.getBoundingClientRect();
+    return { left: bounds.left, right: bounds.right, visible: bounds.width > 0 && bounds.height > 0 };
+  }));
+  expect(scoreCells.every(({ left, right, visible }) => visible && left >= 0 && right <= 390)).toBe(true);
   await context.close();
 });
 
-test('unknown URLs return a designed 404 response with a way home', async ({ page }) => {
+test('phone navigation, demo, and footer controls have 44px touch targets', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true });
+  const page = await context.newPage();
+  await page.goto('/demo');
+  const targets = await page.locator('.site-header nav a, .demo-banner a, .demo-banner button, .site-footer nav a').evaluateAll((elements) => elements.map((element) => {
+    const bounds = element.getBoundingClientRect();
+    return { label: element.textContent?.trim(), width: bounds.width, height: bounds.height };
+  }));
+  expect(targets.length).toBeGreaterThan(0);
+  expect(targets.filter(({ width, height }) => width < 44 || height < 44)).toEqual([]);
+  await context.close();
+});
+
+test('social card metadata serves a supported 1200 by 630 PNG', async ({ page, request }) => {
+  await page.goto('/');
+  const openGraphImage = await page.locator('meta[property="og:image"]').getAttribute('content');
+  const twitterImage = await page.locator('meta[name="twitter:image"]').getAttribute('content');
+  expect(openGraphImage).toBe(twitterImage);
+  const imageUrl = new URL(openGraphImage!);
+  expect(imageUrl.origin).toBe('https://hand-of-two.sociobot.in');
+  const imageResponse = await request.get(imageUrl.pathname);
+  expect(imageResponse.status()).toBe(200);
+  expect(imageResponse.headers()['content-type']).toContain('image/png');
+  const image = await imageResponse.body();
+  expect(image.subarray(1, 4).toString('ascii')).toBe('PNG');
+  expect(image.readUInt32BE(16)).toBe(1200);
+  expect(image.readUInt32BE(20)).toBe(630);
+});
+
+test('unknown URLs return the designed shared site skeleton with a way home', async ({ page }) => {
   const response = await page.goto('/not-a-real-route');
   expect(response?.status()).toBe(404);
+  await expect(page).toHaveTitle('Page not found — Hand of Two');
+  await expect(page.getByRole('banner')).toHaveCount(1);
+  await expect(page.getByRole('navigation', { name: 'Main navigation' })).toHaveCount(1);
+  await expect(page.getByRole('main')).toHaveCount(1);
+  await expect(page.getByRole('contentinfo')).toHaveCount(1);
+  await expect(page.getByRole('link', { name: 'Skip to page' })).toHaveAttribute('href', '#main');
+  await expect(page.locator('h1')).toHaveCount(1);
   await expect(page.getByRole('heading', { name: 'This page does not exist' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Return to Hand of Two' })).toBeVisible();
+  const results = await new AxeBuilder({ page: page as never }).analyze();
+  expect(results.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? ''))).toEqual([]);
 });
