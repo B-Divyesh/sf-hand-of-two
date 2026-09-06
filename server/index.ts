@@ -12,7 +12,7 @@ import { RoomStore } from './room-store';
 const port = Number(process.env.PORT ?? 8787);
 const dataDirectory = process.env.DATA_DIR ?? '/data';
 const origin = process.env.PUBLIC_ORIGIN ?? 'https://hand-of-two.sociobot.in';
-const store = new RoomStore(resolve(dataDirectory, 'hand-of-two.sqlite'));
+const store = new RoomStore(resolve(dataDirectory, 'rooms-v1.sqlite'));
 const app = new Hono();
 const rateBuckets = new Map<string, number[]>();
 
