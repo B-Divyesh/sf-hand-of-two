@@ -1,0 +1,7 @@
+{
+  "live_url": "https://hand-of-two.sociobot.in",
+  "implementation_sha": "ebf7cbf067c64078929220119ff061fe9692bb72",
+  "documentation_sha": "5946e7654ba5126347139f3c7414b31dc7783898",
+  "deployed_at": "2026-09-06",
+  "note": "The documentation commit only records verification and does not change the deployed product."
+}
