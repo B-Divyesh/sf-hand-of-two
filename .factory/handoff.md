@@ -1,56 +1,57 @@
 # Hand of Two handoff
 
 Date: 6 September 2026
-Work order: `hand-of-two-verify-4`
+Work order: `hand-of-two-review-3`
 Artifact class: `browser-game`
 Live product: <https://hand-of-two.sociobot.in>
 Implementation reviewed: `56f111fc186ec8ee79d667dbdaa591f85660b238`
-Documentation baseline: `7aa79152a5b9113f43cb91d062293e4b7f5a32ac`
+Documentation baseline: `f20e5e30f2f3a6e4214657ad70ba6f37c9b86bae`
 
 ## Outcome
 
 **PASS — 0 findings; 0 untested public claims.**
 
-The released static artifact exactly matches a fresh production build of
-`56f111f`. No product code was changed. Verification 4 extends coverage from
-Chromium to current Chromium, Firefox, and WebKit engines.
+No product code changed. The live static artifact exactly matches a fresh
+production build of `56f111f`.
 
 ## Verified
 
 - Clean Node `v22.23.2`, npm `10.9.8`, and Playwright `1.58.2` setup.
 - `npm ci`, `npm test`, `npm run build`, and `npm run test:a11y` passed.
 - All ten exact `.factory/claims.json` commands passed independently.
-- Live Chromium `145.0.7632.6`, Firefox `146.0.1`, and WebKit `26.0` each
-  completed the sample and a real two-client six-turn match.
-- Fresh phone/touch and desktop clients covered hidden moves, audio startup,
-  locked-move reload, settings persistence, keyboard input, end screens, and
-  rematch.
-- The sample stayed labelled, reset to its original draft, and did not change
-  real settings or create demo storage.
-- All application routes, navigation focus, back/forward, legal pages, the
-  expected designed 404, links, privacy request origins, reduced motion, and
-  serious/critical Axe checks passed.
-- Live health returned 200. A fresh allowance returned twelve 201 responses,
-  then 429 with `Retry-After: 60`. Third-seat and cross-room access were
-  rejected. Isolated SQLite restart, expiry, and token-hash tests passed.
-- The complete-edition offer remains `$8 USD` once, not a subscription.
-  Checkout and activation are disabled and were not reported as working.
+- Fresh Chromium desktop and phone/touch contexts showed the job, audience,
+  sample action, and active game before scrolling.
+- The sample stayed labelled, reached a six-turn ending, reset cleanly, and
+  did not change real settings or create demo storage.
+- Two independent live clients covered hidden moves, reload recovery, touch,
+  keyboard, audio startup, six-turn end screens, history, and rematch.
+- Live routes, navigation focus, back/forward, privacy and terms, reduced
+  motion, 200% text, touch targets, product-only requests, and the expected
+  designed 404 passed. Live Axe found zero serious or critical issues.
+- Health returned 200. Live third-seat and cross-room access were rejected. A
+  fresh allowance returned twelve 201 responses, then 429 with
+  `Retry-After: 60`. Isolated SQLite restart and retention tests passed.
+- The complete edition remains a public `$8 USD` one-time offer. Checkout and
+  activation are disabled and were not reported as working.
 
 ## Support boundary
 
-The public site does not publish named browser versions. “Two independent
-browser clients” is a multiplayer requirement rather than an engine matrix.
-Verification 4 demonstrates the three current Playwright engines. The worker
-has no physical phone, audible output device, Firefox mobile build, or branded
-Safari; touch, viewport, and audio-context startup were checked through browser
-automation. These infrastructure limits do not leave a public claim untested.
+The public site does not promise named browser versions. This review used
+Chromium `145.0.7632.6`; Verification 4 independently covered Chromium,
+Firefox, and WebKit. Touch and audio-context startup were verified with browser
+automation rather than a physical phone or audible output device.
+
+The separate path `factory-evidence/hand-of-two-verify-4/qa-report.md` was not
+mounted in this worker. Its complete repository counterpart,
+`.factory/verification-4.md`, was read, and the required evidence was recreated
+fresh.
 
 ## Remaining external work
 
-Billing registration and license activation are pending. No live service
-restart was performed because this assignment requires preserving the released
-candidate; isolated restart persistence passed, and the earlier direct live
-restart evidence remains applicable to the unchanged realtime implementation.
+Billing registration and license activation remain pending. The product says
+so plainly. No live service restart was performed; Verification 2's direct
+restart evidence remains applicable to the unchanged realtime implementation,
+and the clean local SQLite restart test passed.
 
 ## Run locally
 
@@ -61,6 +62,6 @@ npm run build
 npm run test:a11y
 ```
 
-See `.factory/verification-4.md` for commands, engine evidence, prior finding
-disposition, and worker boundaries. Machine-readable evidence is under
+See `.factory/review-3.md` for the complete claim matrix, live evidence, and
+earlier finding disposition. Machine-readable evidence is under
 `/work/.evidence/`.
