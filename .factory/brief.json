@@ -1,0 +1,32 @@
+{
+  "slug": "hand-of-two",
+  "title": "Hand of Two",
+  "territory": "games-creative",
+  "user": "Couples and friends who want a quick, replayable two-player tactical card game without buying a collectible deck or learning a 40-minute ruleset.",
+  "evidence": [
+    {
+      "url": "https://hn.algolia.com/api/v1/items/48556224",
+      "date": "2026-06-16",
+      "quote_or_summary": "An Ask HN poster asks for favorite two-person card games after enjoying German Whist and Cribbage with their spouse."
+    },
+    {
+      "url": "https://lemmy.world/post/35111084",
+      "date": "2025-08-28",
+      "quote_or_summary": "A 151-score, 75-comment co-op request seeks games for two or more people that are actually fun with little to no internet, specifically to prepare in advance."
+    }
+  ],
+  "recurrence": "Separate two-player and low-connectivity threads, with 75 responses in the latter, show a recurring desire for compact social play outside a large online service.",
+  "current_workaround": "Learn traditional card games, buy a physical deck, install a multiplayer client, or send links to heavyweight digital card games.",
+  "incumbents_and_gap": "Cribbage, German Whist, Cuttle, and Board Game Arena offer card play, but are either physical, need accounts/large rulesets, or present a broad platform rather than an immediate 12-minute duel.",
+  "smallest_useful_product": "A room-code, two-player browser card duel with a fixed 18-card shared deck. Players draft three weather cards, play six simultaneous turns to protect or disrupt a tiny expedition, and reveal a short story epilogue. Each run changes the card mix and map modifier. Inputs are mouse/touch; a game takes 10\u201315 minutes. Non-goals: collectible cards, ranked ladder, purchases of power, and spectator chat.",
+  "success_measure": "At least 30% of first rooms immediately start a rematch and median completed match time stays between 8 and 16 minutes.",
+  "artifact_class": "browser-game",
+  "monetization": "one-time \u2014 a complete tactical deck and future scenario packs are legible purchases without turning the game into a CCG.",
+  "constraints": "Use server-authoritative simultaneous resolution to prevent easy room-code cheating; support reconnect within one turn; all art and text must be original and avoid trading-card IP.",
+  "est_build_effort": "M",
+  "scale": "small",
+  "why_distinct": "It is a finite, original micro-duel about shared prediction, not a browser port of an established card game or a collectible economy.",
+  "confidence": 4,
+  "state": "RESEARCHED",
+  "research_run": "research-browser-games-0901-204312-1"
+}
