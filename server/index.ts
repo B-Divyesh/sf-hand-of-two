@@ -12,7 +12,7 @@ import { RoomStore } from './room-store';
 const port = Number(process.env.PORT ?? 8787);
 const dataDirectory = process.env.DATA_DIR ?? '/data';
 const origin = process.env.PUBLIC_ORIGIN ?? 'https://hand-of-two.sociobot.in';
-const databasePath = resolve(dataDirectory, 'rooms-v1.sqlite');
+const databasePath = resolve(dataDirectory, 'rooms-v2.sqlite');
 
 async function openRoomStore(): Promise<RoomStore> {
   for (let attempt = 1; attempt <= 20; attempt += 1) {

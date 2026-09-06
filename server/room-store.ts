@@ -46,7 +46,6 @@ export class RoomStore {
     try {
       this.database.exec(`
         PRAGMA busy_timeout = 10000;
-        PRAGMA journal_mode = DELETE;
         PRAGMA synchronous = FULL;
         CREATE TABLE IF NOT EXISTS rooms (
           code TEXT PRIMARY KEY,
