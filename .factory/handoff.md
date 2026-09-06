@@ -6,7 +6,7 @@ Artifact class: `browser-game`
 Live product: <https://hand-of-two.sociobot.in>
 Static implementation: `56f111fc186ec8ee79d667dbdaa591f85660b238`
 Realtime implementation: `7158d8607ef02094bc105fb16f7fc1cb44fedab7` (unchanged)
-Documentation candidate: pending report commit
+Documentation candidate: `90f13495fe8e37700fb2d4e3ca05a6e7f8277e32`
 
 ## Outcome
 
