@@ -15,12 +15,22 @@ export default defineConfig({
     video: 'retain-on-failure'
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-  webServer: {
-    command: 'npm run build && PORT=4173 DATA_DIR=.test-data PUBLIC_ORIGIN=http://127.0.0.1:4173 npm run start',
-    url: 'http://127.0.0.1:4173/api/health',
-    reuseExistingServer: false,
-    timeout: 60_000,
-    stdout: 'pipe',
-    stderr: 'pipe'
-  }
+  webServer: [
+    {
+      command: 'VITE_REALTIME_ORIGIN=http://127.0.0.1:8788 npm run build && PORT=4173 DATA_DIR=.test-data-static PUBLIC_ORIGIN=http://127.0.0.1:4173 REALTIME_ORIGIN=http://127.0.0.1:8788 npm run start',
+      url: 'http://127.0.0.1:4173/api/health',
+      reuseExistingServer: false,
+      timeout: 60_000,
+      stdout: 'pipe',
+      stderr: 'pipe'
+    },
+    {
+      command: 'PORT=8788 DATA_DIR=.test-data-realtime PUBLIC_ORIGIN=http://127.0.0.1:4173 npm run start',
+      url: 'http://127.0.0.1:8788/api/health',
+      reuseExistingServer: false,
+      timeout: 60_000,
+      stdout: 'pipe',
+      stderr: 'pipe'
+    }
+  ]
 });

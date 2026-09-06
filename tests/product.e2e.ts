@@ -3,6 +3,8 @@ import { expect, test, type Browser, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 
+const REALTIME_ORIGIN = 'http://127.0.0.1:8788';
+
 async function chooseFirstThree(page: Page): Promise<void> {
   await page.locator('button.game-card').nth(0).click();
   await page.locator('button.game-card').nth(1).click();
@@ -28,7 +30,7 @@ async function createTwoPlayerRoom(browser: Browser): Promise<{ host: Page; gues
   await guest.getByRole('button', { name: `Join room ${code}` }).click();
   await expect(host.getByRole('heading', { name: 'Draft three weather cards' })).toBeVisible();
   await expect(guest.getByRole('heading', { name: 'Draft three weather cards' })).toBeVisible();
-  const thirdJoin = await host.request.post(`/api/rooms/${code}/join`);
+  const thirdJoin = await host.request.post(`${REALTIME_ORIGIN}/api/rooms/${code}/join`);
   expect(thirdJoin.status()).toBe(409);
   expect((await thirdJoin.json() as { error: string }).error).toContain('already has two players');
   return { host, guest, code, close: async () => { await hostContext.close(); await guestContext.close(); } };
@@ -91,7 +93,21 @@ test('@claim:private-requests keeps sample and room setup on product-owned origi
   await page.goto('/play');
   await page.getByRole('button', { name: 'Create a room' }).click();
   await expect(page.getByText('Room ready')).toBeVisible();
-  expect(external).toEqual([]);
+  expect(external).toContain(REALTIME_ORIGIN);
+  expect(external.every((origin) => origin === REALTIME_ORIGIN)).toBe(true);
+});
+
+test('production static configuration creates a room through the configured realtime origin', async ({ page }) => {
+  const roomRequestOrigins: string[] = [];
+  page.on('request', (request) => {
+    const url = new URL(request.url());
+    if (request.method() === 'POST' && url.pathname === '/api/rooms') roomRequestOrigins.push(url.origin);
+  });
+  await page.goto('/play');
+  await page.getByRole('button', { name: 'Create a room' }).click();
+  await expect(page.getByText('Room ready')).toBeVisible();
+  expect(roomRequestOrigins).toEqual([REALTIME_ORIGIN]);
+  expect(roomRequestOrigins[0]).not.toBe(new URL(page.url()).origin);
 });
 
 test('@claim:two-client-room resolves hidden choices for independent clients and reaches an end screen', async ({ browser }, testInfo) => {

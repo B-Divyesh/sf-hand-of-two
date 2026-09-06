@@ -12,6 +12,8 @@ import { RoomStore } from './room-store';
 const port = Number(process.env.PORT ?? 8787);
 const dataDirectory = process.env.DATA_DIR ?? '/data';
 const origin = process.env.PUBLIC_ORIGIN ?? 'https://hand-of-two.sociobot.in';
+const realtimeOrigin = new URL(process.env.REALTIME_ORIGIN ?? origin);
+const realtimeSocketOrigin = `${realtimeOrigin.protocol === 'https:' ? 'wss:' : 'ws:'}//${realtimeOrigin.host}`;
 const store = await RoomStore.open(resolve(dataDirectory, 'rooms-v3.sqlite'));
 const app = new Hono();
 const rateBuckets = new Map<string, number[]>();
@@ -22,7 +24,7 @@ app.use('*', async (context, next) => {
   context.header('X-Content-Type-Options', 'nosniff');
   context.header('Referrer-Policy', 'strict-origin-when-cross-origin');
   context.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
-  context.header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
+  context.header('Content-Security-Policy', `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' ${realtimeOrigin.origin} ${realtimeSocketOrigin}; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`);
 });
 
 function clientAddress(context: { req: { header(name: string): string | undefined } }): string {

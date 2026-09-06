@@ -26,7 +26,7 @@ Requirements: Node.js 22.5 or later and npm.
 
 ```bash
 npm ci
-npm run build
+VITE_REALTIME_ORIGIN= npm run build
 PORT=4173 DATA_DIR=.data npm run start
 ```
 
@@ -53,7 +53,7 @@ npm run test:a11y
 - Settings use the `hand-of-two:settings` localStorage key. Demo state uses memory only.
 - No analytics, third-party scripts, remote fonts, chat, accounts, or payment details are collected.
 
-For production, the static client sets `VITE_REALTIME_ORIGIN=https://hand-of-two-realtime.sociobot.in`. The realtime container mounts its fleet-created durable volume at `/data` and stays at one replica because it owns SQLite.
+For production, the tracked `.env.production` sets `VITE_REALTIME_ORIGIN=https://hand-of-two-realtime.sociobot.in`, so a normal `npm run build` creates a static client that calls the product-owned realtime service. The realtime container mounts its fleet-created durable volume at `/data` and stays at one replica because it owns SQLite.
 
 ## Deploy
 
@@ -64,7 +64,6 @@ npm ci
 npm test
 npm run build
 WO_DATA_DIR=/data /opt/fleet/lib/deploy-container.sh hand-of-two-realtime /work/repo Dockerfile 8080
-VITE_REALTIME_ORIGIN=https://hand-of-two-realtime.sociobot.in npm run build
 /opt/fleet/lib/deploy-static.sh hand-of-two /work/repo/dist
 ```
 
