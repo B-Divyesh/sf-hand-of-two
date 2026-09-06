@@ -12,22 +12,7 @@ import { RoomStore } from './room-store';
 const port = Number(process.env.PORT ?? 8787);
 const dataDirectory = process.env.DATA_DIR ?? '/data';
 const origin = process.env.PUBLIC_ORIGIN ?? 'https://hand-of-two.sociobot.in';
-const databasePath = resolve(dataDirectory, 'rooms-v2.sqlite');
-
-async function openRoomStore(): Promise<RoomStore> {
-  for (let attempt = 1; attempt <= 20; attempt += 1) {
-    try {
-      return new RoomStore(databasePath);
-    } catch (error) {
-      const isLocked = error instanceof Error && error.message.includes('database is locked');
-      if (!isLocked || attempt === 20) throw error;
-      await new Promise((resolveWait) => setTimeout(resolveWait, 3000));
-    }
-  }
-  throw new Error('The room database did not become available.');
-}
-
-const store = await openRoomStore();
+const store = await RoomStore.open(resolve(dataDirectory, 'rooms-v3.sqlite'));
 const app = new Hono();
 const rateBuckets = new Map<string, number[]>();
 

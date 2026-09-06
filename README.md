@@ -48,7 +48,7 @@ npm run test:a11y
 
 - Vite and vanilla TypeScript produce the static client in `dist/`.
 - Hono and `ws` expose the room API and WebSocket service.
-- Node’s SQLite module stores room state on `DATA_DIR`.
+- A WebAssembly SQLite engine writes room state atomically to `DATA_DIR`.
 - Rooms expire after 24 hours. Random player identifiers are stored only as SHA-256 hashes.
 - Settings use the `hand-of-two:settings` localStorage key. Demo state uses memory only.
 - No analytics, third-party scripts, remote fonts, chat, accounts, or payment details are collected.

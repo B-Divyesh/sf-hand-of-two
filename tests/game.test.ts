@@ -55,18 +55,18 @@ describe('SQLite room persistence', () => {
     for (const directory of directories.splice(0)) rmSync(directory, { recursive: true, force: true });
   });
 
-  it('restores both seats and shared game state after a service restart', () => {
+  it('restores both seats and shared game state after a service restart', async () => {
     const directory = mkdtempSync(join(tmpdir(), 'hand-of-two-'));
     directories.push(directory);
     const databasePath = join(directory, 'rooms.sqlite');
-    const first = new RoomStore(databasePath);
+    const first = await RoomStore.open(databasePath);
     const host = first.createRoom();
     const guest = first.joinRoom(host.code);
     const hostOffer = first.getView(host.code, 'north').offer;
     first.draft(host.code, 'north', hostOffer.slice(0, 3).map((card) => card.id));
     first.close();
 
-    const restarted = new RoomStore(databasePath);
+    const restarted = await RoomStore.open(databasePath);
     expect(restarted.authenticate(host.code, host.playerToken)).toBe('north');
     expect(restarted.authenticate(host.code, guest.playerToken)).toBe('south');
     expect(restarted.getView(host.code, 'north').draftLocked).toBe(true);
@@ -74,11 +74,11 @@ describe('SQLite room persistence', () => {
     restarted.close();
   });
 
-  it('@claim:room-retention stores token hashes and a 24-hour room expiry', () => {
+  it('@claim:room-retention stores token hashes and a 24-hour room expiry', async () => {
     const directory = mkdtempSync(join(tmpdir(), 'hand-of-two-'));
     directories.push(directory);
     const databasePath = join(directory, 'rooms.sqlite');
-    const store = new RoomStore(databasePath);
+    const store = await RoomStore.open(databasePath);
     const before = Date.now();
     const host = store.createRoom();
     store.close();

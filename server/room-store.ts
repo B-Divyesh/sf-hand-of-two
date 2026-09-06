@@ -1,7 +1,7 @@
 import { createHash, randomBytes, randomInt } from 'node:crypto';
-import { mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
-import { DatabaseSync } from 'node:sqlite';
+import initSqlJs, { type Database } from 'sql.js';
 import {
   createGame,
   otherSeat,
@@ -38,60 +38,63 @@ function makeCode(): string {
 }
 
 export class RoomStore {
-  private database: DatabaseSync;
+  private database: Database;
 
-  constructor(databasePath: string) {
+  private constructor(private databasePath: string, database: Database) {
+    this.database = database;
+    this.database.run(`
+      CREATE TABLE IF NOT EXISTS rooms (
+        code TEXT PRIMARY KEY,
+        north_hash TEXT NOT NULL,
+        south_hash TEXT,
+        state_json TEXT NOT NULL,
+        expires_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS rooms_expiry ON rooms(expires_at);
+    `);
+    this.persist();
+  }
+
+  static async open(databasePath: string): Promise<RoomStore> {
     mkdirSync(dirname(databasePath), { recursive: true });
-    this.database = new DatabaseSync(databasePath);
-    try {
-      this.database.exec(`
-        PRAGMA busy_timeout = 10000;
-        PRAGMA synchronous = FULL;
-        CREATE TABLE IF NOT EXISTS rooms (
-          code TEXT PRIMARY KEY,
-          north_hash TEXT NOT NULL,
-          south_hash TEXT,
-          state_json TEXT NOT NULL,
-          expires_at INTEGER NOT NULL,
-          updated_at INTEGER NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS rooms_expiry ON rooms(expires_at);
-      `);
-    } catch (error) {
-      try { this.database.close(); } catch { /* The process will retry with a new connection. */ }
-      throw error;
-    }
+    const SQL = await initSqlJs({ locateFile: () => resolveWasm() });
+    const bytes = existsSync(databasePath) ? readFileSync(databasePath) : undefined;
+    return new RoomStore(databasePath, new SQL.Database(bytes));
   }
 
   close(): void {
+    this.persist();
     this.database.close();
   }
 
   health(): boolean {
-    const result = this.database.prepare('SELECT 1 AS ok').get() as { ok: number };
+    const result = this.get<{ ok: number }>('SELECT 1 AS ok');
     return result.ok === 1;
   }
 
   cleanup(now = Date.now()): void {
-    this.database.prepare('DELETE FROM rooms WHERE expires_at < ?').run(now);
+    this.run('DELETE FROM rooms WHERE expires_at < ?', [now]);
+    if (this.database.getRowsModified() > 0) this.persist();
   }
 
   createRoom(): { code: string; playerToken: string; seat: Seat } {
     this.cleanup();
     let code = makeCode();
-    while (this.database.prepare('SELECT code FROM rooms WHERE code = ?').get(code)) code = makeCode();
+    while (this.get<{ code: string } | undefined>('SELECT code FROM rooms WHERE code = ?', [code])) code = makeCode();
     const token = makeToken();
     const state = createGame(randomInt(1, 2_147_483_647), 'sample', 'waiting');
     const now = Date.now();
-    this.database.prepare(
+    this.run(
       'INSERT INTO rooms (code, north_hash, south_hash, state_json, expires_at, updated_at) VALUES (?, ?, NULL, ?, ?, ?)'
-    ).run(code, hashToken(token), JSON.stringify(state), now + ROOM_TTL_MS, now);
+    , [code, hashToken(token), JSON.stringify(state), now + ROOM_TTL_MS, now]);
+    this.persist();
     return { code, playerToken: token, seat: 'north' };
   }
 
   joinRoom(inputCode: string): { code: string; playerToken: string; seat: Seat } {
     const code = inputCode.trim().toUpperCase();
-    this.database.exec('BEGIN IMMEDIATE');
+    this.database.run('BEGIN');
     try {
       const row = this.getRow(code);
       if (row.south_hash) throw new Error('This room already has two players. Ask the host to create another room.');
@@ -99,12 +102,13 @@ export class RoomStore {
       const state = JSON.parse(row.state_json) as GameState;
       state.status = 'drafting';
       const now = Date.now();
-      this.database.prepare('UPDATE rooms SET south_hash = ?, state_json = ?, expires_at = ?, updated_at = ? WHERE code = ?')
-        .run(hashToken(token), JSON.stringify(state), now + ROOM_TTL_MS, now, code);
-      this.database.exec('COMMIT');
+      this.run('UPDATE rooms SET south_hash = ?, state_json = ?, expires_at = ?, updated_at = ? WHERE code = ?',
+        [hashToken(token), JSON.stringify(state), now + ROOM_TTL_MS, now, code]);
+      this.database.run('COMMIT');
+      this.persist();
       return { code, playerToken: token, seat: 'south' };
     } catch (error) {
-      this.database.exec('ROLLBACK');
+      this.database.run('ROLLBACK');
       throw error;
     }
   }
@@ -167,26 +171,51 @@ export class RoomStore {
 
   private change(inputCode: string, mutation: (state: GameState) => void): void {
     const code = inputCode.trim().toUpperCase();
-    this.database.exec('BEGIN IMMEDIATE');
+    this.database.run('BEGIN');
     try {
       const row = this.getRow(code);
       const state = JSON.parse(row.state_json) as GameState;
       mutation(state);
       const now = Date.now();
-      this.database.prepare('UPDATE rooms SET state_json = ?, expires_at = ?, updated_at = ? WHERE code = ?')
-        .run(JSON.stringify(state), now + ROOM_TTL_MS, now, code);
-      this.database.exec('COMMIT');
+      this.run('UPDATE rooms SET state_json = ?, expires_at = ?, updated_at = ? WHERE code = ?',
+        [JSON.stringify(state), now + ROOM_TTL_MS, now, code]);
+      this.database.run('COMMIT');
+      this.persist();
     } catch (error) {
-      this.database.exec('ROLLBACK');
+      this.database.run('ROLLBACK');
       throw error;
     }
   }
 
   private getRow(code: string): RoomRow {
-    const row = this.database.prepare(
+    const row = this.get<RoomRow | undefined>(
       'SELECT code, north_hash, south_hash, state_json, expires_at FROM rooms WHERE code = ? AND expires_at >= ?'
-    ).get(code, Date.now()) as RoomRow | undefined;
+    , [code, Date.now()]);
     if (!row) throw new Error('That room was not found. Check the five-character code or create a new room.');
     return row;
   }
+
+  private run(sql: string, values: Array<string | number | null> = []): void {
+    this.database.run(sql, values);
+  }
+
+  private get<T>(sql: string, values: Array<string | number | null> = []): T {
+    const statement = this.database.prepare(sql);
+    try {
+      statement.bind(values);
+      return (statement.step() ? statement.getAsObject() : undefined) as T;
+    } finally {
+      statement.free();
+    }
+  }
+
+  private persist(): void {
+    const nextPath = `${this.databasePath}.next`;
+    writeFileSync(nextPath, this.database.export());
+    renameSync(nextPath, this.databasePath);
+  }
+}
+
+function resolveWasm(): string {
+  return `${process.cwd()}/node_modules/sql.js/dist/sql-wasm.wasm`;
 }
