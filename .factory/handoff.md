@@ -1,11 +1,11 @@
 # Hand of Two handoff
 
 Date: 6 September 2026
-Work order: `hand-of-two-review-1`
+Work order: `hand-of-two-review-2`
 Artifact class: `browser-game`
 Live product: <https://hand-of-two.sociobot.in>
 Implementation reviewed: `56f111fc186ec8ee79d667dbdaa591f85660b238`
-Documentation baseline: `f41f62b9b4a7149f657e917b0bf11cc62152c054`
+Documentation baseline: `e270ea0a72a33099fbdd7dfe7763f30412e0d7fe`
 
 ## Outcome
 
@@ -23,9 +23,9 @@ only the labelled sample.
   active-game preview before scrolling. Phone 200% text did not overflow.
 - The sample starts populated, keeps its demo label, completes to a six-turn end
   screen, resets, and leaves real browser settings untouched.
-- Fresh independent live clients created and joined a room, kept the first move
-  hidden, reconnected after a locked move, completed, reached complementary end
-  screens, and rematched.
+- Fresh independent live clients created and joined a room, rejected a third
+  seat and cross-room credential, kept the first move hidden, reconnected after
+  a locked move, completed, reached complementary end screens, and rematched.
 - Live health returned 200; room creation rate limiting returned 429 with
   `Retry-After: 60`. Local SQLite tests cover persistence, expiry and isolation;
   the unchanged service's direct restart evidence remains in Verification 3.
@@ -49,5 +49,5 @@ npm run test:a11y
 ```
 
 The factory deploys `dist/` as `sf-hand-of-two`. Its product-owned realtime
-service uses its fleet-created `/data` SQLite mount. See `.factory/review-1.md`
+service uses its fleet-created `/data` SQLite mount. See `.factory/review-2.md`
 for the complete review evidence.
