@@ -1,7 +1,7 @@
 {
   "live_url": "https://hand-of-two.sociobot.in",
-  "implementation_sha": "7158d8607ef02094bc105fb16f7fc1cb44fedab7",
-  "documentation_sha": "eb3bedbae0bf803caf60b32704c358389f7c9ca8",
+  "implementation_sha": "56f111fc186ec8ee79d667dbdaa591f85660b238",
+  "documentation_sha": null,
   "deployed_at": "2026-09-06",
-  "note": "The documentation commit records repair verification and does not change the deployed product."
+  "note": "The static repair is deployed. The realtime implementation is unchanged at 7158d8607ef02094bc105fb16f7fc1cb44fedab7."
 }

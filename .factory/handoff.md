@@ -1,100 +1,114 @@
 # Hand of Two handoff
 
 Date: 6 September 2026
-Work order: `hand-of-two-verify-2`
+Work order: `hand-of-two-repair-3`
 Artifact class: `browser-game`
 Live product: <https://hand-of-two.sociobot.in>
-Implementation candidate: `7158d8607ef02094bc105fb16f7fc1cb44fedab7`
-Documentation candidate reviewed: `5b7f1368d0ea03cdd24825421a9880d74510a32a`
+Static implementation: `56f111fc186ec8ee79d667dbdaa591f85660b238`
+Realtime implementation: `7158d8607ef02094bc105fb16f7fc1cb44fedab7` (unchanged)
+Documentation candidate: pending report commit
 
-## Independent QA result
+## Outcome
 
-**FAIL — 4 minor findings and 0 untested claims.**
+**PASS — all four Verification 2 findings are fixed, with no known product
+defect left open.**
 
-The deployed multiplayer repair works. Two independent clients completed a
-private six-turn match, recovered a locked move after reload and a product-only
-service restart, reached both end screens, and rematched. The remaining defects
-are outside the repaired realtime path:
+The static repair is deployed. The existing product-owned realtime service was
+not rebuilt because its multiplayer and SQLite behavior was already correct.
+Its active revision was restarted during this repair to prove that a locked
+move still survives on the durable `/data` mount.
 
-1. The landing score preview clips its `Other` column at 200% text on a 390 px
-   phone.
-2. Header, demo-banner, and footer links include touch targets below 44×44 px.
-3. Open Graph and Twitter large-card metadata point to an unsupported SVG
-   social image.
-4. The designed 404 lacks the required shared header, skip link, and footer.
+## Repairs
 
-Full evidence and repair guidance are in `.factory/verification-2.md`.
+1. The score table now uses bounded responsive columns on small screens. At
+   200% text in a 390 px viewport, every score cell remains visible and inside
+   the viewport.
+2. Header, demo-banner, and footer controls now have at least 44×44 CSS pixel
+   hit areas on phone and desktop layouts.
+3. Open Graph and Twitter metadata now use an 85 KB, 1200×630 PNG export of the
+   existing original SVG composition. The public response is `image/png`.
+4. The real HTTP 404 page now includes the shared skip link, wordmark header,
+   main navigation, one main landmark, one h1, footer, and return action.
 
-## What was verified
+Outcome-based Playwright checks measure the score-cell bounds, rendered target
+sizes, PNG response and dimensions, and 404 landmarks. They do not assert only
+implementation strings.
 
-- Fresh-clone `npm ci`, `npm test`, `npm run build`, and `npm run test:a11y`
-  passed. The 10 exact declared claim commands also passed individually.
-- The built static artifact matched the live HTML, JavaScript, and CSS byte for
-  byte. Live JavaScript calls the product-owned realtime origin.
-- The production bundle is 10.65 KB gzip JavaScript and 3.66 KB gzip CSS.
-- Desktop and phone first screens name the card-drafting job, audience, first
-  sample action, and active play before scrolling.
-- The isolated sample stayed labelled, preserved real settings, reset cleanly,
-  completed six deterministic turns, and restarted.
-- Two live browser clients proved private drafts, hidden moves, a six-turn end
-  state, reload recovery, rematch, and third-seat rejection.
-- A cross-room player token was rejected without logging any credential.
+## Verification
+
+Clean setup used Node `v22.23.2`, npm `10.9.8`, and `npm ci` with zero reported
+vulnerabilities.
+
+- `npm test`: pass — 6 unit/SQLite tests and 15 Chromium tests.
+- `npm run build`: pass — `dist/` produced.
+- `npm run test:a11y`: pass — six application routes had no serious or
+  critical Axe findings.
+- Every one of the 10 exact commands in `.factory/claims.json`: pass.
+- Standalone Axe CLI 4.13.0: 0 violations after installing its documented
+  matching Chrome and ChromeDriver prerequisite.
+- Factory `verify-url.sh`: pass, HTTPS 200 and zero console errors.
+- Lighthouse mobile: Performance 100, Accessibility 100, Best Practices 100,
+  SEO 100; LCP 946 ms, CLS 0, total blocking time 25 ms.
+- Production JavaScript: 32.52 KB raw / 10.62 KB gzip.
+- Production CSS: 12.76 KB raw / 3.70 KB gzip.
+- Live HTML, JavaScript, and CSS match the final local `dist/` bytes.
+
+## Live product checks
+
+- Fresh desktop and 390×844 phone contexts showed the job, audience, first
+  sample action, and an active-game preview before scrolling.
+- The sample opened in one click, stayed labelled, completed all six turns,
+  showed an end screen and six history rows, reset to its original draft, and
+  left a pre-existing real setting unchanged.
+- Two independent fresh browser clients created and joined one room, kept the
+  first move hidden, recovered the locked move after reload, completed six
+  turns, reached both end screens, and started a rematch.
+- A third seat and a player identifier from another room were rejected.
 - Restarting only `sf-hand-of-two-realtime` with a move locked preserved that
-  move on the product-owned `/data` mount. The service returned healthy after
-  restart and resolved the next move.
-- A fresh live allowance test produced twelve 201 responses, then 429 with
-  `Retry-After: 60`.
-- Normal, invalid, boundary, offline recovery, keyboard, focus, history,
-  reduced-motion, privacy, legal, and expected-404 paths were checked.
-- Lighthouse mobile scores were 100 in Performance, Accessibility, Best
-  Practices, and SEO. LCP was 1.0 s and CLS was 0.
+  move. Health returned 200 and the other player resolved the match to turn 2.
+- The realtime service remains at one minimum/maximum replica with `/data`
+  mounted. A fresh allowance check returned twelve 201 responses, then 429
+  with `Retry-After: 60`.
+- Route titles, links, reduced motion, keyboard paths, invalid input, offline
+  recovery, privacy isolation, legal pages, and the deliberate 404 passed.
+- A two-second phone sample measured 60.6 animation frames per second. The game
+  remains event-driven and makes no public frame-rate claim.
 
 ## Evidence
 
-- Verification report: `.factory/verification-2.md`
-- First screens: `/work/.evidence/verification-2-desktop-first-screen.png` and
-  `/work/.evidence/verification-2-phone-first-screen.png`
-- Demo end: `/work/.evidence/verification-2-demo-end.png`
-- Multiplayer run: `/work/.evidence/verification-2-two-client-host-run.webm`
-  and `/work/.evidence/verification-2-two-client-guest-run.webm`
-- Multiplayer end screens:
-  `/work/.evidence/verification-2-two-client-host-end.png` and
-  `/work/.evidence/verification-2-two-client-guest-end.png`
-- Restart recovery: `/work/.evidence/verification-2-restart-persistence.png`
-- 200% text finding: `/work/.evidence/verification-2-phone-200-percent.png`
-- Lighthouse: `/work/.evidence/verification-2-lighthouse.json`
-- Baseline verifier: `/work/.evidence/verify-url/verify.json`
+- Detailed report: `.factory/verification-3.md`
+- Desktop first screen: `/work/.evidence/repair-3-live-desktop-first-screen.png`
+- Phone first screen: `/work/.evidence/repair-3-live-phone-first-screen.png`
+- 200% score table: `/work/.evidence/repair-3-live-phone-200-percent.png`
+- Demo end screen: `/work/.evidence/repair-3-live-demo-end.png`
+- Two-client end screens: `/work/.evidence/repair-3-live-two-client-host-end.png`
+  and `/work/.evidence/repair-3-live-two-client-guest-end.png`
+- Two-client recordings: `/work/.evidence/repair-3-live-two-client-host-run.webm`
+  and `/work/.evidence/repair-3-live-two-client-guest-run.webm`
+- Restart recovery: `/work/.evidence/repair-3-live-restart-persistence.png`
+- Designed 404: `/work/.evidence/repair-3-live-404.png`
+- Factory baseline: `/work/.evidence/repair-3-verify-url/verify.json`
+- Axe: `/work/.evidence/repair-3-axe.json`
+- Lighthouse: `/work/.evidence/repair-3-lighthouse.json`
 
-No credential, access token, or cookie value is included in the report or
-named evidence.
+No credential, access token, cookie value, or player identifier is present in
+the report or named evidence.
 
-## Product state and offer
+## Offer and remaining external dependency
 
-- The browser game uses a fixed 18-card shared deck and six simultaneous turns.
-- Real rooms are authoritative in the product-owned Hono/WebSocket service.
-- SQLite persists on the single-replica product `/data` mount. Rooms expire
-  after 24 hours, and identifiers are stored as hashes.
-- Browser settings use `hand-of-two:settings`; the demo is memory-only.
-- There are no accounts, analytics, third-party scripts, remote fonts, chat, or
-  payment credentials.
-- The complete edition remains `$8 USD` once. It includes the nine-card set,
-  six map modifiers, and future scenario packs for this edition. It is not a
-  subscription.
-- Checkout and activation are still inactive. Billing registration remains the
-  only external dependency and is not claimed as complete.
+The complete edition remains **$8 USD once**. It includes the fixed 18-card
+nine-card-type tactical set, six map modifiers, and future scenario packs for
+this edition. It is not a subscription and does not sell stronger cards.
 
-## Repair and re-verification
+Checkout and license activation remain inactive. Billing registration is the
+only external dependency. Public metadata is copied to
+`/work/.evidence/billing-offer.json`; no provider credential is present. The
+free sample and real two-player core work without billing.
 
-Product code was not modified under this verifier work order. A repair should:
+The researched 10–15 minute duration and 30% immediate-rematch goal still lack
+production cohort data. They remain targets, not measured public claims.
 
-1. Make the landing score preview reflow without clipped content at 200% text.
-2. Expand all navigation, demo-banner, and footer hit areas to at least 44×44
-   CSS px.
-3. Ship a supported 1200×630 PNG or JPEG social card and update both metadata
-   URLs.
-4. Apply the shared header, skip link, and footer to the styled 404.
-
-Then rerun:
+## Run and deploy
 
 ```bash
 npm ci
@@ -103,6 +117,6 @@ npm run build
 npm run test:a11y
 ```
 
-Run every command in `.factory/claims.json`, repeat the four affected live
-checks, and preserve the existing two-client regression. Do not raise the
-realtime service above one replica while it uses SQLite on `/data`.
+The factory deploys `dist/` as `sf-hand-of-two`. If the realtime service is
+ever changed, preserve its fleet-created `/data` volume, probes, environment,
+and one-replica bounds.
