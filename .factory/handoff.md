@@ -1,43 +1,56 @@
 # Hand of Two handoff
 
 Date: 6 September 2026
-Work order: `hand-of-two-review-2`
+Work order: `hand-of-two-verify-4`
 Artifact class: `browser-game`
 Live product: <https://hand-of-two.sociobot.in>
 Implementation reviewed: `56f111fc186ec8ee79d667dbdaa591f85660b238`
-Documentation baseline: `e270ea0a72a33099fbdd7dfe7763f30412e0d7fe`
+Documentation baseline: `7aa79152a5b9113f43cb91d062293e4b7f5a32ac`
 
 ## Outcome
 
-**PASS — 0 findings; 0 untested declared claims.**
+**PASS — 0 findings; 0 untested public claims.**
 
-The live static artifact exactly matches a fresh production build of `56f111f`.
-The game is a real authoritative two-browser, six-turn duel; the demo bot is
-only the labelled sample.
+The released static artifact exactly matches a fresh production build of
+`56f111f`. No product code was changed. Verification 4 extends coverage from
+Chromium to current Chromium, Firefox, and WebKit engines.
 
 ## Verified
 
-- Clean `npm ci`, `npm test`, `npm run build`, and `npm run test:a11y` passed.
+- Clean Node `v22.23.2`, npm `10.9.8`, and Playwright `1.58.2` setup.
+- `npm ci`, `npm test`, `npm run build`, and `npm run test:a11y` passed.
 - All ten exact `.factory/claims.json` commands passed independently.
-- Fresh desktop and phone browsers showed the job, audience, sample action, and
-  active-game preview before scrolling. Phone 200% text did not overflow.
-- The sample starts populated, keeps its demo label, completes to a six-turn end
-  screen, resets, and leaves real browser settings untouched.
-- Fresh independent live clients created and joined a room, rejected a third
-  seat and cross-room credential, kept the first move hidden, reconnected after
-  a locked move, completed, reached complementary end screens, and rematched.
-- Live health returned 200; room creation rate limiting returned 429 with
-  `Retry-After: 60`. Local SQLite tests cover persistence, expiry and isolation;
-  the unchanged service's direct restart evidence remains in Verification 3.
-- Live routes, expected styled 404, links, metadata, privacy request paths,
-  keyboard structure, reduced motion, `verify-url.sh`, and live Axe scans all
-  passed. No console errors were observed.
+- Live Chromium `145.0.7632.6`, Firefox `146.0.1`, and WebKit `26.0` each
+  completed the sample and a real two-client six-turn match.
+- Fresh phone/touch and desktop clients covered hidden moves, audio startup,
+  locked-move reload, settings persistence, keyboard input, end screens, and
+  rematch.
+- The sample stayed labelled, reset to its original draft, and did not change
+  real settings or create demo storage.
+- All application routes, navigation focus, back/forward, legal pages, the
+  expected designed 404, links, privacy request origins, reduced motion, and
+  serious/critical Axe checks passed.
+- Live health returned 200. A fresh allowance returned twelve 201 responses,
+  then 429 with `Retry-After: 60`. Third-seat and cross-room access were
+  rejected. Isolated SQLite restart, expiry, and token-hash tests passed.
+- The complete-edition offer remains `$8 USD` once, not a subscription.
+  Checkout and activation are disabled and were not reported as working.
+
+## Support boundary
+
+The public site does not publish named browser versions. “Two independent
+browser clients” is a multiplayer requirement rather than an engine matrix.
+Verification 4 demonstrates the three current Playwright engines. The worker
+has no physical phone, audible output device, Firefox mobile build, or branded
+Safari; touch, viewport, and audio-context startup were checked through browser
+automation. These infrastructure limits do not leave a public claim untested.
 
 ## Remaining external work
 
-Billing registration is pending. The public complete-edition offer is `$8 USD`
-once, not a subscription. Checkout and activation are disabled and are not
-claimed to work.
+Billing registration and license activation are pending. No live service
+restart was performed because this assignment requires preserving the released
+candidate; isolated restart persistence passed, and the earlier direct live
+restart evidence remains applicable to the unchanged realtime implementation.
 
 ## Run locally
 
@@ -48,6 +61,6 @@ npm run build
 npm run test:a11y
 ```
 
-The factory deploys `dist/` as `sf-hand-of-two`. Its product-owned realtime
-service uses its fleet-created `/data` SQLite mount. See `.factory/review-2.md`
-for the complete review evidence.
+See `.factory/verification-4.md` for commands, engine evidence, prior finding
+disposition, and worker boundaries. Machine-readable evidence is under
+`/work/.evidence/`.
