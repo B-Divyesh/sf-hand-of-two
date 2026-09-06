@@ -80,6 +80,12 @@ No checkout, entitlement, or activation is claimed. The billing operator must re
 
 ## Known gaps and next steps
 
+## Verification 1 correction — 6 September 2026
+
+Independent verification found a **critical live deployment defect**. The deployed static JavaScript does not embed `VITE_REALTIME_ORIGIN`, so its room-creation request falls back to `https://hand-of-two.sociobot.in/api/rooms` and receives HTTP 405. The product shows a recovery message instead of a room code. The product-owned realtime service itself is healthy, but live two-browser creation, reconnect, completion, and rematch cannot currently be performed.
+
+The source candidate and all clean-checkout claims pass locally. This does **not** make the live multiplayer claim valid. Rebuild and deploy the static output with `VITE_REALTIME_ORIGIN=https://hand-of-two-realtime.sociobot.in`, then repeat the live two-client six-turn, reconnect, and rematch check before accepting the release. Full evidence is in `.factory/verification-1.md`.
+
 1. Billing registration and license validation are external dependencies. Keep the paid content gated until both are verified end to end.
 2. The 10–15 minute session range and 30% rematch target have no production cohort yet. They remain research targets, not measured claims.
 3. Online rooms require a connection. There is no offline-play claim; the low-connectivity feature is reconnecting without losing the current locked move.
