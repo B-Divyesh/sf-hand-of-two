@@ -1,0 +1,16 @@
+{
+  "slug": "hand-of-two-complete",
+  "name": "Hand of Two Complete Edition",
+  "price_minor": 800,
+  "currency": "USD",
+  "price_type": "one_time_price",
+  "return_url": "https://hand-of-two.sociobot.in/",
+  "price_evidence": "The researched brief specifies a one-time complete tactical deck; the live offer, terms, and README publish $8 USD once.",
+  "paid_features": [
+    "Nine-card tactical set in a fixed 18-card shared deck",
+    "Six map modifiers",
+    "Future scenario packs for this edition"
+  ],
+  "license_validation_path": null,
+  "registration_status": "pending_external_billing_operator"
+}

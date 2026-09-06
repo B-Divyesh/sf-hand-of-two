@@ -1,0 +1,9 @@
+:root { color-scheme: light; font-family: "Trebuchet MS", "Segoe UI", sans-serif; background: #f3ecd8; color: #142c28; }
+* { box-sizing: border-box; }
+body { min-height: 100vh; margin: 0; display: grid; place-items: center; padding: 1rem; background-image: url('/contours.svg'); }
+main { width: min(760px, 100%); padding: clamp(2rem, 8vw, 6rem); border: 2px solid #142c28; border-radius: 40px 4px; background: #e5d7b9; box-shadow: 8px 8px 0 rgba(20,44,40,.2); }
+h1 { max-width: 12ch; margin: .4rem 0 1.5rem; font-family: Georgia, serif; font-size: clamp(2.5rem, 10vw, 5rem); line-height: 1; }
+p { max-width: 50ch; font-size: 1.1rem; line-height: 1.55; }
+.eyebrow { color: #9d351f; font-size: .8rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+a { min-height: 48px; display: inline-flex; align-items: center; margin-top: 1rem; padding: .7rem 1rem; color: white; background: #173c36; border: 2px solid #142c28; border-radius: 2px 14px; font-weight: 900; }
+a:focus-visible { outline: 3px solid #005fcc; outline-offset: 4px; }

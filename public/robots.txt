@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hand-of-two.sociobot.in/sitemap.xml

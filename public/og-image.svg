@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f3ecd8"/>
+  <g fill="none" stroke="#173c36" stroke-opacity=".13" stroke-width="4">
+    <path d="M-50 105c170-120 310-87 430 22s253 119 390 18 289-103 475 19"/>
+    <path d="M-50 170C112 57 260 89 380 187s252 108 390 14 294-97 475 12"/>
+    <path d="M-50 504c160-110 307-80 427 20s257 112 396 13 292-97 475 19"/>
+    <path d="M-40 565c160-103 299-75 421 18s253 105 391 12 288-93 470 18"/>
+  </g>
+  <path d="M790 505 940 133l83 238 65-133 88 267H790Z" fill="#173c36" stroke="#142c28" stroke-width="10"/>
+  <path d="M840 418h290" stroke="#b5cb83" stroke-width="18"/>
+  <g transform="translate(82 100)">
+    <text x="0" y="40" font-family="Arial,sans-serif" font-size="26" font-weight="700" letter-spacing="4" fill="#9d351f">TWO-PLAYER BROWSER CARD DUEL</text>
+    <text x="0" y="145" font-family="Georgia,serif" font-size="82" font-weight="700" fill="#142c28">Draft cards.</text>
+    <text x="0" y="238" font-family="Georgia,serif" font-size="82" font-weight="700" fill="#142c28">Predict a friend.</text>
+    <text x="0" y="336" font-family="Arial,sans-serif" font-size="34" fill="#50625b">Six hidden turns. One shared expedition.</text>
+    <text x="0" y="425" font-family="Arial,sans-serif" font-size="30" font-weight="700" fill="#173c36">HAND OF TWO</text>
+  </g>
+</svg>

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "demo-sandbox",
+    "claim": "The populated sample starts in one click and does not change real browser settings.",
+    "where": "first screen, demo banner, README",
+    "test": "npm test -- --grep @claim:demo-sandbox",
+    "sandbox": "fresh browser context with a pre-existing real setting; enter from the first screen, reset, leave, return, and inspect storage"
+  },
+  {
+    "id": "six-turn-match",
+    "claim": "A match reaches a win, loss, or draw after six turns and restart returns to a fresh draft.",
+    "where": "game, how it works, README",
+    "test": "npm test -- --grep @claim:six-turn-match",
+    "sandbox": "fresh demo; draft three cards, play six moves, inspect six history rows, then restart"
+  },
+  {
+    "id": "private-requests",
+    "claim": "The site sends game data only to product-owned origins and loads no third-party scripts.",
+    "where": "first-screen facts, privacy page",
+    "test": "npm test -- --grep @claim:private-requests",
+    "sandbox": "fresh browser request log across the demo and real room creation; assert every request is product-owned"
+  },
+  {
+    "id": "two-client-room",
+    "claim": "Two independent browser clients play with hidden moves resolved by shared authoritative state.",
+    "where": "first screen, play entry, privacy page, README",
+    "test": "npm test -- --grep @claim:two-client-room",
+    "sandbox": "two fresh browser contexts; create and join one room, prove the first locked move does not change scores, finish six turns, then rematch"
+  },
+  {
+    "id": "one-turn-reconnect",
+    "claim": "A player can reconnect without losing a move locked during the current turn.",
+    "where": "README",
+    "test": "npm test -- --grep @claim:one-turn-reconnect",
+    "sandbox": "two browser contexts; lock one move, reload that client, resolve from the other client, and observe turn two"
+  },
+  {
+    "id": "settings-persist",
+    "claim": "Sound and reduced-motion settings persist in the real browser workspace.",
+    "where": "settings page, README",
+    "test": "npm test -- --grep @claim:settings-persist",
+    "sandbox": "fresh real browser workspace; enable sound and reduced motion, reload, and inspect the controls and applied mode"
+  },
+  {
+    "id": "one-time-offer",
+    "claim": "The complete edition costs $8 USD once, is not a subscription, and checkout is not active yet.",
+    "where": "first screen, paid section, terms, README",
+    "test": "npm test -- --grep @claim:one-time-offer",
+    "sandbox": "fresh browser; compare the offer and terms, verify the purchase control is disabled, and assert no checkout request starts"
+  },
+  {
+    "id": "deterministic-sample",
+    "claim": "The sample deal is deterministic for verification.",
+    "where": "demo documentation, README",
+    "test": "npm run test:unit -- --testNamePattern @claim:deterministic-sample",
+    "sandbox": "create games with equal and different seeds; compare the actual dealt card offers"
+  },
+  {
+    "id": "room-retention",
+    "claim": "Room state expires after 24 hours and player identifiers are stored as hashes.",
+    "where": "privacy page, README",
+    "test": "npm run test:unit -- --testNamePattern @claim:room-retention",
+    "sandbox": "temporary SQLite database; create a room, inspect its expiry boundary and stored identifier, then remove the temporary directory"
+  },
+  {
+    "id": "fixed-deck",
+    "claim": "Both the sample and complete modes use a fixed 18-card shared deck.",
+    "where": "README, paid section",
+    "test": "npm run test:unit -- --testNamePattern @claim:fixed-deck",
+    "sandbox": "construct both real deck modes and assert 18 unique card instances in each"
+  }
+]

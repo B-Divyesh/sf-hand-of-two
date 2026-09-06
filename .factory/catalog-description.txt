@@ -1,0 +1,1 @@
+Draft cards and predict a friend’s moves in a six-turn, two-browser expedition duel.

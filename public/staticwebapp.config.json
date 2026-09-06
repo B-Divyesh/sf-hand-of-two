@@ -1,0 +1,21 @@
+{
+  "routes": [
+    { "route": "/demo", "rewrite": "/index.html" },
+    { "route": "/play", "rewrite": "/index.html" },
+    { "route": "/settings", "rewrite": "/index.html" },
+    { "route": "/privacy", "rewrite": "/index.html" },
+    { "route": "/terms", "rewrite": "/index.html" }
+  ],
+  "responseOverrides": {
+    "404": { "rewrite": "/404.html" }
+  },
+  "globalHeaders": {
+    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://hand-of-two-realtime.sociobot.in wss://hand-of-two-realtime.sociobot.in; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()"
+  },
+  "mimeTypes": {
+    ".webmanifest": "application/manifest+json"
+  }
+}

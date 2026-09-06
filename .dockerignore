@@ -1,0 +1,9 @@
+node_modules
+dist
+.git
+.data
+.test-data
+test-results
+playwright-report
+.factory/evidence
+*.log
