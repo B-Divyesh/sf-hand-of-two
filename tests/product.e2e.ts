@@ -281,17 +281,19 @@ test('phone layout shows the job, first action, and active game preview before s
   await context.close();
 });
 
-test('phone navigation, demo, and footer controls have 44px touch targets', async ({ browser }) => {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true });
-  const page = await context.newPage();
-  await page.goto('/demo');
-  const targets = await page.locator('.site-header nav a, .demo-banner a, .demo-banner button, .site-footer nav a').evaluateAll((elements) => elements.map((element) => {
-    const bounds = element.getBoundingClientRect();
-    return { label: element.textContent?.trim(), width: bounds.width, height: bounds.height };
-  }));
-  expect(targets.length).toBeGreaterThan(0);
-  expect(targets.filter(({ width, height }) => width < 44 || height < 44)).toEqual([]);
-  await context.close();
+test('navigation, demo, and footer controls have 44px targets on phone and desktop', async ({ browser }) => {
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 900 }]) {
+    const context = await browser.newContext({ viewport, isMobile: viewport.width === 390 });
+    const page = await context.newPage();
+    await page.goto('/demo');
+    const targets = await page.locator('.site-header nav a, .demo-banner a, .demo-banner button, .site-footer nav a').evaluateAll((elements) => elements.map((element) => {
+      const bounds = element.getBoundingClientRect();
+      return { label: element.textContent?.trim(), width: bounds.width, height: bounds.height };
+    }));
+    expect(targets.length).toBeGreaterThan(0);
+    expect(targets.filter(({ width, height }) => width < 44 || height < 44)).toEqual([]);
+    await context.close();
+  }
 });
 
 test('social card metadata serves a supported 1200 by 630 PNG', async ({ page, request }) => {
