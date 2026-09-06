@@ -43,20 +43,25 @@ export class RoomStore {
   constructor(databasePath: string) {
     mkdirSync(dirname(databasePath), { recursive: true });
     this.database = new DatabaseSync(databasePath);
-    this.database.exec(`
-      PRAGMA busy_timeout = 10000;
-      PRAGMA journal_mode = DELETE;
-      PRAGMA synchronous = FULL;
-      CREATE TABLE IF NOT EXISTS rooms (
-        code TEXT PRIMARY KEY,
-        north_hash TEXT NOT NULL,
-        south_hash TEXT,
-        state_json TEXT NOT NULL,
-        expires_at INTEGER NOT NULL,
-        updated_at INTEGER NOT NULL
-      );
-      CREATE INDEX IF NOT EXISTS rooms_expiry ON rooms(expires_at);
-    `);
+    try {
+      this.database.exec(`
+        PRAGMA busy_timeout = 10000;
+        PRAGMA journal_mode = DELETE;
+        PRAGMA synchronous = FULL;
+        CREATE TABLE IF NOT EXISTS rooms (
+          code TEXT PRIMARY KEY,
+          north_hash TEXT NOT NULL,
+          south_hash TEXT,
+          state_json TEXT NOT NULL,
+          expires_at INTEGER NOT NULL,
+          updated_at INTEGER NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS rooms_expiry ON rooms(expires_at);
+      `);
+    } catch (error) {
+      try { this.database.close(); } catch { /* The process will retry with a new connection. */ }
+      throw error;
+    }
   }
 
   close(): void {
